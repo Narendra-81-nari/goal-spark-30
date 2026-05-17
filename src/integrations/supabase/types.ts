@@ -14,16 +14,245 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      checkins: {
+        Row: {
+          achievement_value: number
+          completion_date: string
+          created_at: string
+          created_by: string
+          goal_id: string
+          id: string
+          manager_comments: string | null
+          score: number | null
+        }
+        Insert: {
+          achievement_value: number
+          completion_date?: string
+          created_at?: string
+          created_by?: string
+          goal_id: string
+          id?: string
+          manager_comments?: string | null
+          score?: number | null
+        }
+        Update: {
+          achievement_value?: number
+          completion_date?: string
+          created_at?: string
+          created_by?: string
+          goal_id?: string
+          id?: string
+          manager_comments?: string | null
+          score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          created_at: string
+          created_by: string
+          cycle: string
+          deadline: string | null
+          description: string | null
+          employee_id: string
+          id: string
+          is_locked: boolean
+          manager_comments: string | null
+          status: Database["public"]["Enums"]["goal_status"]
+          target: number
+          title: string
+          uom: Database["public"]["Enums"]["uom_type"]
+          updated_at: string
+          weightage: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          cycle?: string
+          deadline?: string | null
+          description?: string | null
+          employee_id: string
+          id?: string
+          is_locked?: boolean
+          manager_comments?: string | null
+          status?: Database["public"]["Enums"]["goal_status"]
+          target: number
+          title: string
+          uom?: Database["public"]["Enums"]["uom_type"]
+          updated_at?: string
+          weightage: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          cycle?: string
+          deadline?: string | null
+          description?: string | null
+          employee_id?: string
+          id?: string
+          is_locked?: boolean
+          manager_comments?: string | null
+          status?: Database["public"]["Enums"]["goal_status"]
+          target?: number
+          title?: string
+          uom?: Database["public"]["Enums"]["uom_type"]
+          updated_at?: string
+          weightage?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          manager_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          manager_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          manager_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shared_goals: {
+        Row: {
+          allocation_pct: number | null
+          child_goal_id: string
+          created_at: string
+          id: string
+          is_split_forked: boolean
+          original_goal_id: string
+          slocked: boolean
+        }
+        Insert: {
+          allocation_pct?: number | null
+          child_goal_id: string
+          created_at?: string
+          id?: string
+          is_split_forked?: boolean
+          original_goal_id: string
+          slocked?: boolean
+        }
+        Update: {
+          allocation_pct?: number | null
+          child_goal_id?: string
+          created_at?: string
+          id?: string
+          is_split_forked?: boolean
+          original_goal_id?: string
+          slocked?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_goals_child_goal_id_fkey"
+            columns: ["child_goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_goals_original_goal_id_fkey"
+            columns: ["original_goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "employee" | "manager" | "admin"
+      goal_status: "PENDING" | "APPROVED" | "REJECTED"
+      uom_type: "HIGHER_BETTER" | "LOWER_BETTER" | "TIMELINE" | "ZERO_BASED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +379,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["employee", "manager", "admin"],
+      goal_status: ["PENDING", "APPROVED", "REJECTED"],
+      uom_type: ["HIGHER_BETTER", "LOWER_BETTER", "TIMELINE", "ZERO_BASED"],
+    },
   },
 } as const
