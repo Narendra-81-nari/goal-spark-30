@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const { user, role } = useAuth();
+  const { user, role, refreshRole } = useAuth();
 
   const { data: goals = [] } = useQuery({
     queryKey: ["my-goals", user?.id],
