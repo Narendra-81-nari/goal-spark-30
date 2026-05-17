@@ -26,10 +26,15 @@ function TeamPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("goals")
-        .select("*, profiles!goals_employee_id_fkey(full_name, email), checkins(*)")
+        .select("*, checkins(*)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      const ids = Array.from(new Set((data ?? []).map((g) => g.employee_id)));
+      const { data: profs } = ids.length
+        ? await supabase.from("profiles").select("id, full_name, email").in("id", ids)
+        : { data: [] as { id: string; full_name: string | null; email: string | null }[] };
+      const map = new Map((profs ?? []).map((p) => [p.id, p]));
+      return (data ?? []).map((g) => ({ ...g, profile: map.get(g.employee_id) }));
     },
   });
 
@@ -64,7 +69,7 @@ function TeamPage() {
       ) : (
         <div className="grid gap-3">
           {goals.map((g) => {
-            const profile = (g as any).profiles as { full_name?: string; email?: string } | null;
+            const profile = (g as any).profile as { full_name?: string; email?: string } | undefined;
             return (
               <Card key={g.id}>
                 <CardContent className="p-5">
