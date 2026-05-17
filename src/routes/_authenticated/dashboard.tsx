@@ -60,11 +60,26 @@ function DashboardPage() {
     return { name: g.title.slice(0, 12), score: Math.round(score), target: 100 };
   });
 
+  const { refreshRole } = useAuth();
+  const claimAdmin = async () => {
+    const { data, error } = await supabase.rpc("claim_admin_if_none");
+    if (error) return toast.error(error.message);
+    if (data) { await refreshRole(); toast.success("You are now an admin"); }
+    else toast.info("Admin already exists — ask them to promote you.");
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="text-sm text-muted-foreground">Your appraisal snapshot · role: <span className="capitalize font-medium">{role}</span></p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+          <p className="text-sm text-muted-foreground">Your appraisal snapshot · role: <span className="capitalize font-medium">{role}</span></p>
+        </div>
+        {role === "employee" && (
+          <Button variant="outline" size="sm" onClick={claimAdmin}>
+            <Shield className="h-4 w-4 mr-1" /> Claim admin (if first user)
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
