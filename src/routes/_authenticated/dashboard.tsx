@@ -60,7 +60,7 @@ function DashboardPage() {
     return { name: g.title.slice(0, 12), score: Math.round(score), target: 100 };
   });
 
-  const { refreshRole } = useAuth();
+  
   const claimAdmin = async () => {
     const { data, error } = await supabase.rpc("claim_admin_if_none");
     if (error) return toast.error(error.message);
