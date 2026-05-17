@@ -11,12 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Lock, MessageSquarePlus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { computeScore } from "@/lib/scoring";
-import { checkinSchema } from "@/lib/validations";
+import { checkinSchema, CYCLES } from "@/lib/validations";
 import { toast } from "sonner";
 import { logAudit } from "@/lib/audit";
-import { CYCLES } from "@/lib/validations";
 
 export const Route = createFileRoute("/_authenticated/goals")({ component: GoalsPage });
 
